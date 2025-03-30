@@ -243,7 +243,7 @@ void nes_hal_init() {
     close(fds[1]); 
 
     // open the framebuffer device 
-    fb = open("/dev/??", 0); /* STUDENT_TODO: replace this */
+    fb = open("/dev/fb", O_RDWR);
     assert(fb>0); 
     
     // Configure fb hardware via procfs
@@ -294,7 +294,13 @@ void nes_flip_display()
     cur_id = 1-cur_id; 
 #else
      
-    /* STUDENT_TODO: your code here */
+    n = lseek(fb, 0, SEEK_SET); assert(n==0);
+    if ((n=write(fb, vtx, vtx_sz)) != vtx_sz) {
+        printf("%s: failed to write to hw fb. fb %d sz %d ret %d\n",
+            __func__, fb, vtx_sz, n); 
+    }
+    n = config_fbctl(0,0,0,0/*dc*/, 0/*xoff*/, 0/*yoff*/);
+    assert(n==0); 
 #endif
 }
 

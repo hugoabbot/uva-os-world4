@@ -8,20 +8,23 @@
 // return 0 on success
 // cf: kernel code: procfs_parse_fbctl()
 int config_fbctl(int w, int d, int vw, int vh, int offx, int offy) {
-    // char buf[LINESIZE];
-    // int n, fbctl; 
-    int fbctl;
+    char buf[LINESIZE];
+    int n, fbctl; 
 
     if ((fbctl = open("/proc/fbctl", O_RDWR)) <=0) return -1; 
 
      
-    /* STUDENT_TODO: your code here */
+    sprintf(buf, "%d %d %d %d %d %d\n", w, d, vw, vh, offx, offy);
+    n = strlen(buf);
+    if ((n = write(fbctl, buf, n)) < 0) {
+        printf("write to fbctl failed with %d. shouldn't happen", n);
+        exit(1);
+    }
 
     // printf("write returns %d\n", n);
 
     close(fbctl);  // close it so flush the writes to the kernel
-    // return !(n>0);
-    return 0; 
+    return !(n>0);
 }
 
 // 0 on success
@@ -54,7 +57,12 @@ int read_dispinfo(int dispinfo[MAX_DISP_ARGS], int *nargs) {
     if ((dp = open("/proc/dispinfo", O_RDONLY)) <=0) return -1; 
 
     // read a line from /proc/dispinfo to buf
-    /* STUDENT_TODO: your code here */
+    n = read(dp, buf, sizeof(buf) - 1);
+    if (n <= 0) {
+        close(dp);
+        return -1;
+    }
+    buf[n] = '\0';
 
     // parse the 1st line from /proc/dispinfo as a list of int args... 
     for (s = buf, *nargs=0; s < buf + n; s++) {
@@ -63,6 +71,12 @@ int read_dispinfo(int dispinfo[MAX_DISP_ARGS], int *nargs) {
         if ('0' <= *s && *s <= '9') {  // reach the 1st char (e.g. '1') in a number (e.g. "123")
              
             /* STUDENT_TODO: your code here */
+            dispinfo[*nargs] = atoi(s);
+            while ('0' <= *s && *s <= '9' && s < buf + n)
+                s++;
+            if ((*nargs)++ == MAX_DISP_ARGS)
+                break;
+            
             // printf("got arg %d\n", dispinfo[nargs]); // debugging
         }
     }    
