@@ -177,7 +177,7 @@ static int create_dev_procfs(void) {
   int fd; 
 
   // create /proc/xxx with open()
-  if (1) { /* STUDENT_TODO: replace this */
+  if (mkdir("/proc") < 0) {
     printf("failed to create /proc"); 
     goto mkdev; 
   }
@@ -185,7 +185,14 @@ static int create_dev_procfs(void) {
     struct proc_dev_info *p = pdi + i; 
     if (p->type != TYPE_PROCFS) continue; 
      
-    /* STUDENT_TODO: your code here */
+    int fd = open(p->path, O_CREATE|O_RDWR);
+    if (fd < 0) {
+      printf("failed to create %s", p->path); 
+      return -1; 
+    }
+    else {
+      close(fd);
+    }
   }
 
   // create /dev/xxx with mknod()
@@ -198,7 +205,10 @@ mkdev:
     struct proc_dev_info *p = pdi + i; 
     if (p->type != TYPE_DEVFS) continue; 
      
-    /* STUDENT_TODO: your code here */
+    if (mknod(p->path, p->major, 0) < 0) {
+      printf("failed to create %s", p->path); 
+      return -1; 
+    }
   }
   return 0; 
 }

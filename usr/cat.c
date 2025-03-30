@@ -12,7 +12,7 @@ cat(int fd)
   while((n = read(fd, buf, sizeof(buf))) > 0) {
     // write whatever chars read to stdout
      
-    /* STUDENT_TODO: your code here */
+    write(1, buf, n);
   }
   if(n < 0){
     fprintf(2, "cat: read error\n");

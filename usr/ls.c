@@ -45,7 +45,7 @@ ls(char *path)
   case T_FILE:
   case T_FILE_FAT:
     // print filename, type, inode number, size
-    /* STUDENT_TODO: your code here */
+    printf("%s %d %d %d\n", fmtname(path), st.type, st.ino, st.size);
     break;
 
   case T_DIR: // open the dir file and parse per entry
@@ -59,7 +59,16 @@ ls(char *path)
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
       // iterate over each entry and print out the name, type, inode number, size
        
-      /* STUDENT_TODO: your code here */
+      if(de.inum == 0) {
+        continue;
+      }
+      memmove(p, de.name, DIRSIZ);
+      p[DIRSIZ] = 0;
+      if(stat(buf, &st) < 0) {
+        printf("ls: cannot stat %s\n", buf);
+        continue;
+      }
+      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
     }
     break;
 

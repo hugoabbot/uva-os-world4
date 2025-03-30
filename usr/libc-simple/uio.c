@@ -8,8 +8,9 @@
 // return 0 on success
 // cf: kernel code: procfs_parse_fbctl()
 int config_fbctl(int w, int d, int vw, int vh, int offx, int offy) {
-    char buf[LINESIZE];
-    int n, fbctl; 
+    // char buf[LINESIZE];
+    // int n, fbctl; 
+    int fbctl;
 
     if ((fbctl = open("/proc/fbctl", O_RDWR)) <=0) return -1; 
 
@@ -19,7 +20,8 @@ int config_fbctl(int w, int d, int vw, int vh, int offx, int offy) {
     // printf("write returns %d\n", n);
 
     close(fbctl);  // close it so flush the writes to the kernel
-    return !(n>0); 
+    // return !(n>0);
+    return 0; 
 }
 
 // 0 on success
