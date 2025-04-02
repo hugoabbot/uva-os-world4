@@ -39,7 +39,18 @@ int main(int argc, char *argv[])
     // if arg[1] specified, use it as a rom filename and load the rom 
     // to the memory buffer
      
-    /* STUDENT_TODO: your code here */
+    if ((fd = open(argv[1], O_RDONLY)) < 0) {
+        fprintf(stderr, "specificed rom open failed. use built-in rom\n");
+        goto load;
+    }
+ 
+    int nrom_total_bytes = read(fd, rom, sizeof(rom));
+    if (nrom_total_bytes != sizeof(rom)){
+        fprintf(stderr, "rom read failed. exiting\n");
+        exit(1);
+    }
+ 
+    close(fd);
     
     printf("open rom...ok\n"); 
 load: 
